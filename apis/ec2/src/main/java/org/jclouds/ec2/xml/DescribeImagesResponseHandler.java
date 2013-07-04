@@ -81,6 +81,7 @@ public class DescribeImagesResponseHandler extends ParseSax.HandlerForGeneratedR
    private String ramdiskId;
    private boolean inProductCodes;
    private boolean inBlockDeviceMapping;
+   private boolean inTagSet;
    private RootDeviceType rootDeviceType = RootDeviceType.INSTANCE_STORE;
    private Map<String, EbsBlockDevice> ebsBlockDevices = Maps.newHashMap();
    private String deviceName;
@@ -102,6 +103,8 @@ public class DescribeImagesResponseHandler extends ParseSax.HandlerForGeneratedR
          inProductCodes = true;
       } else if (qName.equals("blockDeviceMapping")) {
          inBlockDeviceMapping = true;
+      } else if (qName.equals("tagSet")) {
+         inTagSet = true;
       }
    }
 
@@ -154,6 +157,8 @@ public class DescribeImagesResponseHandler extends ParseSax.HandlerForGeneratedR
          virtualizationType = VirtualizationType.fromValue(currentText.toString().trim());
       } else if (qName.equals("hypervisor")) {
          hypervisor = Hypervisor.fromValue(currentText.toString().trim());
+      } else if (qName.equals("tagSet")) {
+         inTagSet = false;
       } else if (qName.equals("item")) {
          if (inBlockDeviceMapping) {
             ebsBlockDevices.put(deviceName, new Image.EbsBlockDevice(snapshotId, volumeSize, deleteOnTermination));
@@ -161,7 +166,7 @@ public class DescribeImagesResponseHandler extends ParseSax.HandlerForGeneratedR
             this.snapshotId = null;
             this.volumeSize = 0;
             this.deleteOnTermination = true;
-         } else if (!inProductCodes) {
+         } else if (!inTagSet && !inProductCodes) {
             try {
                String region = getRequest() != null ? AWSUtils.findRegionInArgsOrNull(getRequest()) : null;
                if (region == null)

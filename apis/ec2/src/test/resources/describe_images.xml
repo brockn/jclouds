@@ -18,6 +18,12 @@
             <rootDeviceType>instance-store</rootDeviceType>
             <blockDeviceMapping />
             <virtualizationType>paravirtual</virtualizationType>
+            <tagSet>
+                <item>
+                    <key>Name</key>
+                    <value>Some machine name</value>
+                </item>
+            </tagSet>
         </item>
     </imagesSet>
 </DescribeImagesResponse>
